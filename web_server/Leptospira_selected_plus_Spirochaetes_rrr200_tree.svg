@@ -1,0 +1,511 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='800' height='735' style='background-color: white; border: 1px solid rgb(144, 144, 144); font-size: 12px;'>
+<style>
+    .highlight { fill: rgb(255,0,0); }       
+    .tip_name { font-family: Arial, sans-serif; font-size: 10px}
+    .click_circle { cursor: pointer; opacity: 0; r: 5 }
+    .branch {fill: none; stroke-width: 3; stroke: black }
+    .hBranch {fill: none; stroke-width: 3; stroke: black }
+    .vBranch {fill: none; stroke-width: 3; stroke: blue }
+    .tree {background-color: 'white'}
+</style>
+<script type='text/javascript'>
+
+node_clicked = function(target) {
+	if(target.correspondingUseElement)
+            var target_cue = target.correspondingUseElement;	
+	console.log("tree node clicked, this="+target+", cue="+target_cue+", window.parent = "+window.parent);
+	respond_to_click(target);
+	if (window.parent.tree_node_clicked)
+            window.parent.tree_node_clicked(target);
+	else
+	    alert("You clicked '" + target.id + "' which is a " + target.nodeName + " element");
+}
+
+respond_to_click = function(target) {
+	console.log("respond_to_click: "+target.id)
+	target.classList.toggle('highlight');
+	var turn_on = target.matches('.highlight');
+	var affected_nodes = target.querySelectorAll('.tip_name, .subtree, .tip');
+	for (const node of affected_nodes) {
+	   // console.log("  id="+node.id+", is_hl:"+node.matches('.highlight'))
+	   if (turn_on) 
+		{node.classList.add('highlight');}
+	   else 
+		{node.classList.remove('highlight');}
+	}
+}
+
+
+</script>
+<g class='tree_container' transform='translate(25,0)'><g class='subtree' id='node_int_1'  y='455.58837890625' transform='translate(0,0)'>
+<path class='hBranch' d='M0,455.588 h-0.000'/>
+<circle class='click_circle' cx='0' cy='455.58837890625' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree' id='node_int_2'  y='87.31201171875' transform='translate(31.8296347381904,0)'>
+<path class='hBranch' d='M0,87.312 h-31.830'/>
+<circle class='click_circle' cx='0' cy='87.31201171875' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree tip' id='node_929563.3'  y='15' transform='translate(120.623517962939,0)'>
+<path class='hBranch' d='M0,15.000 h-120.624'/>
+<circle class='click_circle' cx='0' cy='15' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='929563.3' x='0' y='15' dy='4' dx='5'>929563.3</text>
+</g>
+<g class='subtree' id='node_int_3'  y='159.6240234375' transform='translate(60.6831951957347,0)'>
+<path class='hBranch' d='M0,159.624 h-60.683'/>
+<circle class='click_circle' cx='0' cy='159.6240234375' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree' id='node_int_4'  y='55.3125' transform='translate(58.2715422360646,0)'>
+<path class='hBranch' d='M0,55.312 h-58.272'/>
+<circle class='click_circle' cx='0' cy='55.3125' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree' id='node_int_5'  y='37.5' transform='translate(5.7156998297204,0)'>
+<path class='hBranch' d='M0,37.500 h-5.716'/>
+<circle class='click_circle' cx='0' cy='37.5' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree tip' id='node_456481.4'  y='30' transform='translate(9.38451891970151,0)'>
+<path class='hBranch' d='M0,30.000 h-9.385'/>
+<circle class='click_circle' cx='0' cy='30' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='456481.4' x='0' y='30' dy='4' dx='5'>456481.4</text>
+</g>
+<g class='subtree tip' id='node_1249483.3'  y='45' transform='translate(11.8710208986925,0)'>
+<path class='hBranch' d='M0,45.000 h-11.871'/>
+<circle class='click_circle' cx='0' cy='45' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='1249483.3' x='0' y='45' dy='4' dx='5'>1249483.3</text>
+</g>
+<path class='vBranch' d='M0,30.000 v15.000'/>
+</g>
+<g class='subtree' id='node_int_6'  y='73.125' transform='translate(5.25255468794505,0)'>
+<path class='hBranch' d='M0,73.125 h-5.253'/>
+<circle class='click_circle' cx='0' cy='73.125' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree tip' id='node_1193051.3'  y='60' transform='translate(9.39038234031135,0)'>
+<path class='hBranch' d='M0,60.000 h-9.390'/>
+<circle class='click_circle' cx='0' cy='60' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='1193051.3' x='0' y='60' dy='4' dx='5'>1193051.3</text>
+</g>
+<g class='subtree' id='node_int_7'  y='86.25' transform='translate(4.69086500014392,0)'>
+<path class='hBranch' d='M0,86.250 h-4.691'/>
+<circle class='click_circle' cx='0' cy='86.25' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree tip' id='node_1257025.3'  y='75' transform='translate(8.79407898358287,0)'>
+<path class='hBranch' d='M0,75.000 h-8.794'/>
+<circle class='click_circle' cx='0' cy='75' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='1257025.3' x='0' y='75' dy='4' dx='5'>1257025.3</text>
+</g>
+<g class='subtree' id='node_int_8'  y='97.5' transform='translate(2.13990166282954,0)'>
+<path class='hBranch' d='M0,97.500 h-2.140'/>
+<circle class='click_circle' cx='0' cy='97.5' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree tip' id='node_1218599.3'  y='90' transform='translate(5.64297894378546,0)'>
+<path class='hBranch' d='M0,90.000 h-5.643'/>
+<circle class='click_circle' cx='0' cy='90' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='1218599.3' x='0' y='90' dy='4' dx='5'>1218599.3</text>
+</g>
+<g class='subtree tip' id='node_1218591.3'  y='105' transform='translate(8.31501500940158,0)'>
+<path class='hBranch' d='M0,105.000 h-8.315'/>
+<circle class='click_circle' cx='0' cy='105' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='1218591.3' x='0' y='105' dy='4' dx='5'>1218591.3</text>
+</g>
+<path class='vBranch' d='M0,90.000 v15.000'/>
+</g>
+<path class='vBranch' d='M0,75.000 v22.500'/>
+</g>
+<path class='vBranch' d='M0,60.000 v26.250'/>
+</g>
+<path class='vBranch' d='M0,37.500 v35.625'/>
+</g>
+<g class='subtree' id='node_int_9'  y='263.935546875' transform='translate(29.3473821893477,0)'>
+<path class='hBranch' d='M0,263.936 h-29.347'/>
+<circle class='click_circle' cx='0' cy='263.935546875' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree' id='node_int_10'  y='148.65234375' transform='translate(24.5378676908673,0)'>
+<path class='hBranch' d='M0,148.652 h-24.538'/>
+<circle class='click_circle' cx='0' cy='148.65234375' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree tip' id='node_1049970.3'  y='120' transform='translate(8.90333947104144,0)'>
+<path class='hBranch' d='M0,120.000 h-8.903'/>
+<circle class='click_circle' cx='0' cy='120' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='1049970.3' x='0' y='120' dy='4' dx='5'>1049970.3</text>
+</g>
+<g class='subtree' id='node_int_11'  y='177.3046875' transform='translate(4.0189925422688,0)'>
+<path class='hBranch' d='M0,177.305 h-4.019'/>
+<circle class='click_circle' cx='0' cy='177.3046875' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree tip' id='node_1218565.3'  y='135' transform='translate(8.40489811073851,0)'>
+<path class='hBranch' d='M0,135.000 h-8.405'/>
+<circle class='click_circle' cx='0' cy='135' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='1218565.3' x='0' y='135' dy='4' dx='5'>1218565.3</text>
+</g>
+<g class='subtree' id='node_int_12'  y='219.609375' transform='translate(2.23840745465232,0)'>
+<path class='hBranch' d='M0,219.609 h-2.238'/>
+<circle class='click_circle' cx='0' cy='219.609375' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree' id='node_int_13'  y='174.375' transform='translate(13.024445325193,0)'>
+<path class='hBranch' d='M0,174.375 h-13.024'/>
+<circle class='click_circle' cx='0' cy='174.375' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree' id='node_int_14'  y='157.5' transform='translate(3.66422989892747,0)'>
+<path class='hBranch' d='M0,157.500 h-3.664'/>
+<circle class='click_circle' cx='0' cy='157.5' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree tip' id='node_1001595.3'  y='150' transform='translate(2.12592618996801,0)'>
+<path class='hBranch' d='M0,150.000 h-2.126'/>
+<circle class='click_circle' cx='0' cy='150' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='1001595.3' x='0' y='150' dy='4' dx='5'>1001595.3</text>
+</g>
+<g class='subtree tip' id='node_1085538.3'  y='165' transform='translate(2.14558795701891,0)'>
+<path class='hBranch' d='M0,165.000 h-2.146'/>
+<circle class='click_circle' cx='0' cy='165' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='1085538.3' x='0' y='165' dy='4' dx='5'>1085538.3</text>
+</g>
+<path class='vBranch' d='M0,150.000 v15.000'/>
+</g>
+<g class='subtree' id='node_int_15'  y='191.25' transform='translate(1.92138016646367,0)'>
+<path class='hBranch' d='M0,191.250 h-1.921'/>
+<circle class='click_circle' cx='0' cy='191.25' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree tip' id='node_1049941.3'  y='180' transform='translate(4.56408867607909,0)'>
+<path class='hBranch' d='M0,180.000 h-4.564'/>
+<circle class='click_circle' cx='0' cy='180' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='1049941.3' x='0' y='180' dy='4' dx='5'>1049941.3</text>
+</g>
+<g class='subtree' id='node_int_16'  y='202.5' transform='translate(5.08683349821564,0)'>
+<path class='hBranch' d='M0,202.500 h-5.087'/>
+<circle class='click_circle' cx='0' cy='202.5' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree tip' id='node_189518.3'  y='195' transform='translate(0.180709362433438,0)'>
+<path class='hBranch' d='M0,195.000 h-0.181'/>
+<circle class='click_circle' cx='0' cy='195' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='189518.3' x='0' y='195' dy='4' dx='5'>189518.3</text>
+</g>
+<g class='subtree tip' id='node_267671.5'  y='210' transform='translate(0.169536193195243,0)'>
+<path class='hBranch' d='M0,210.000 h-0.170'/>
+<circle class='click_circle' cx='0' cy='210' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='267671.5' x='0' y='210' dy='4' dx='5'>267671.5</text>
+</g>
+<path class='vBranch' d='M0,195.000 v15.000'/>
+</g>
+<path class='vBranch' d='M0,180.000 v22.500'/>
+</g>
+<path class='vBranch' d='M0,157.500 v33.750'/>
+</g>
+<g class='subtree' id='node_int_17'  y='264.84375' transform='translate(5.15720508431483,0)'>
+<path class='hBranch' d='M0,264.844 h-5.157'/>
+<circle class='click_circle' cx='0' cy='264.84375' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree' id='node_int_18'  y='243.75' transform='translate(7.25482768869237,0)'>
+<path class='hBranch' d='M0,243.750 h-7.255'/>
+<circle class='click_circle' cx='0' cy='243.75' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree' id='node_int_19'  y='232.5' transform='translate(0.189567460359783,0)'>
+<path class='hBranch' d='M0,232.500 h-0.190'/>
+<circle class='click_circle' cx='0' cy='232.5' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree tip' id='node_1193012.3'  y='225' transform='translate(0.480870114377061,0)'>
+<path class='hBranch' d='M0,225.000 h-0.481'/>
+<circle class='click_circle' cx='0' cy='225' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='1193012.3' x='0' y='225' dy='4' dx='5'>1193012.3</text>
+</g>
+<g class='subtree tip' id='node_758847.3'  y='240' transform='translate(0.6183715586657,0)'>
+<path class='hBranch' d='M0,240.000 h-0.618'/>
+<circle class='click_circle' cx='0' cy='240' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='758847.3' x='0' y='240' dy='4' dx='5'>758847.3</text>
+</g>
+<path class='vBranch' d='M0,225.000 v15.000'/>
+</g>
+<g class='subtree tip' id='node_996805.3'  y='255' transform='translate(0.402122175620053,0)'>
+<path class='hBranch' d='M0,255.000 h-0.402'/>
+<circle class='click_circle' cx='0' cy='255' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='996805.3' x='0' y='255' dy='4' dx='5'>996805.3</text>
+</g>
+<path class='vBranch' d='M0,232.500 v22.500'/>
+</g>
+<g class='subtree' id='node_int_20'  y='285.9375' transform='translate(3.2878137261199,0)'>
+<path class='hBranch' d='M0,285.938 h-3.288'/>
+<circle class='click_circle' cx='0' cy='285.9375' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree tip' id='node_355276.3'  y='270' transform='translate(5.5909197943116,0)'>
+<path class='hBranch' d='M0,270.000 h-5.591'/>
+<circle class='click_circle' cx='0' cy='270' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='355276.3' x='0' y='270' dy='4' dx='5'>355276.3</text>
+</g>
+<g class='subtree' id='node_int_21'  y='301.875' transform='translate(1.03257143050389,0)'>
+<path class='hBranch' d='M0,301.875 h-1.033'/>
+<circle class='click_circle' cx='0' cy='301.875' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree tip' id='node_1192864.3'  y='285' transform='translate(4.70379329077701,0)'>
+<path class='hBranch' d='M0,285.000 h-4.704'/>
+<circle class='click_circle' cx='0' cy='285' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='1192864.3' x='0' y='285' dy='4' dx='5'>1192864.3</text>
+</g>
+<g class='subtree' id='node_int_22'  y='318.75' transform='translate(1.56480986825498,0)'>
+<path class='hBranch' d='M0,318.750 h-1.565'/>
+<circle class='click_circle' cx='0' cy='318.75' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree' id='node_int_23'  y='307.5' transform='translate(1.73385839325386,0)'>
+<path class='hBranch' d='M0,307.500 h-1.734'/>
+<circle class='click_circle' cx='0' cy='307.5' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree tip' id='node_1088540.3'  y='300' transform='translate(2.18734164264611,0)'>
+<path class='hBranch' d='M0,300.000 h-2.187'/>
+<circle class='click_circle' cx='0' cy='300' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='1088540.3' x='0' y='300' dy='4' dx='5'>1088540.3</text>
+</g>
+<g class='subtree tip' id='node_996804.3'  y='315' transform='translate(2.42995789848173,0)'>
+<path class='hBranch' d='M0,315.000 h-2.430'/>
+<circle class='click_circle' cx='0' cy='315' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='996804.3' x='0' y='315' dy='4' dx='5'>996804.3</text>
+</g>
+<path class='vBranch' d='M0,300.000 v15.000'/>
+</g>
+<g class='subtree tip' id='node_1049759.3'  y='330' transform='translate(2.76509439376373,0)'>
+<path class='hBranch' d='M0,330.000 h-2.765'/>
+<circle class='click_circle' cx='0' cy='330' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='1049759.3' x='0' y='330' dy='4' dx='5'>1049759.3</text>
+</g>
+<path class='vBranch' d='M0,307.500 v22.500'/>
+</g>
+<path class='vBranch' d='M0,285.000 v33.750'/>
+</g>
+<path class='vBranch' d='M0,270.000 v31.875'/>
+</g>
+<path class='vBranch' d='M0,243.750 v42.188'/>
+</g>
+<path class='vBranch' d='M0,174.375 v90.469'/>
+</g>
+<path class='vBranch' d='M0,135.000 v84.609'/>
+</g>
+<path class='vBranch' d='M0,120.000 v57.305'/>
+</g>
+<g class='subtree' id='node_int_24'  y='379.21875' transform='translate(17.7067324030216,0)'>
+<path class='hBranch' d='M0,379.219 h-17.707'/>
+<circle class='click_circle' cx='0' cy='379.21875' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree tip' id='node_2023191.3'  y='345' transform='translate(28.4559215786022,0)'>
+<path class='hBranch' d='M0,345.000 h-28.456'/>
+<circle class='click_circle' cx='0' cy='345' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='2023191.3' x='0' y='345' dy='4' dx='5'>2023191.3</text>
+</g>
+<g class='subtree' id='node_int_25'  y='413.4375' transform='translate(6.75434191852862,0)'>
+<path class='hBranch' d='M0,413.438 h-6.754'/>
+<circle class='click_circle' cx='0' cy='413.4375' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree' id='node_int_26'  y='388.125' transform='translate(7.9621070754904,0)'>
+<path class='hBranch' d='M0,388.125 h-7.962'/>
+<circle class='click_circle' cx='0' cy='388.125' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree' id='node_int_27'  y='371.25' transform='translate(15.2264748327304,0)'>
+<path class='hBranch' d='M0,371.250 h-15.226'/>
+<circle class='click_circle' cx='0' cy='371.25' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree tip' id='node_1193011.3'  y='360' transform='translate(6.72527431604298,0)'>
+<path class='hBranch' d='M0,360.000 h-6.725'/>
+<circle class='click_circle' cx='0' cy='360' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='1193011.3' x='0' y='360' dy='4' dx='5'>1193011.3</text>
+</g>
+<g class='subtree' id='node_int_28'  y='382.5' transform='translate(3.40655994390689,0)'>
+<path class='hBranch' d='M0,382.500 h-3.407'/>
+<circle class='click_circle' cx='0' cy='382.5' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree tip' id='node_1049789.4'  y='375' transform='translate(4.56357987722724,0)'>
+<path class='hBranch' d='M0,375.000 h-4.564'/>
+<circle class='click_circle' cx='0' cy='375' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='1049789.4' x='0' y='375' dy='4' dx='5'>1049789.4</text>
+</g>
+<g class='subtree tip' id='node_1049790.3'  y='390' transform='translate(5.44932961636052,0)'>
+<path class='hBranch' d='M0,390.000 h-5.449'/>
+<circle class='click_circle' cx='0' cy='390' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='1049790.3' x='0' y='390' dy='4' dx='5'>1049790.3</text>
+</g>
+<path class='vBranch' d='M0,375.000 v15.000'/>
+</g>
+<path class='vBranch' d='M0,360.000 v22.500'/>
+</g>
+<g class='subtree tip' id='node_2484979.4'  y='405' transform='translate(20.3172890342882,0)'>
+<path class='hBranch' d='M0,405.000 h-20.317'/>
+<circle class='click_circle' cx='0' cy='405' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='2484979.4' x='0' y='405' dy='4' dx='5'>2484979.4</text>
+</g>
+<path class='vBranch' d='M0,371.250 v33.750'/>
+</g>
+<g class='subtree' id='node_int_29'  y='438.75' transform='translate(11.0603324251385,0)'>
+<path class='hBranch' d='M0,438.750 h-11.060'/>
+<circle class='click_circle' cx='0' cy='438.75' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree' id='node_int_30'  y='427.5' transform='translate(19.8048295224149,0)'>
+<path class='hBranch' d='M0,427.500 h-19.805'/>
+<circle class='click_circle' cx='0' cy='427.5' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree tip' id='node_996808.3'  y='420' transform='translate(7.80208701528674e-05,0)'>
+<path class='hBranch' d='M0,420.000 h-0.000'/>
+<circle class='click_circle' cx='0' cy='420' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='996808.3' x='0' y='420' dy='4' dx='5'>996808.3</text>
+</g>
+<g class='subtree tip' id='node_1049972.3'  y='435' transform='translate(0.0021882520158507,0)'>
+<path class='hBranch' d='M0,435.000 h-0.002'/>
+<circle class='click_circle' cx='0' cy='435' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='1049972.3' x='0' y='435' dy='4' dx='5'>1049972.3</text>
+</g>
+<path class='vBranch' d='M0,420.000 v15.000'/>
+</g>
+<g class='subtree tip' id='node_1193069.3'  y='450' transform='translate(16.7114457257396,0)'>
+<path class='hBranch' d='M0,450.000 h-16.711'/>
+<circle class='click_circle' cx='0' cy='450' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='1193069.3' x='0' y='450' dy='4' dx='5'>1193069.3</text>
+</g>
+<path class='vBranch' d='M0,427.500 v22.500'/>
+</g>
+<path class='vBranch' d='M0,388.125 v50.625'/>
+</g>
+<path class='vBranch' d='M0,345.000 v68.438'/>
+</g>
+<path class='vBranch' d='M0,148.652 v230.566'/>
+</g>
+<path class='vBranch' d='M0,55.312 v208.623'/>
+</g>
+<path class='vBranch' d='M0,15.000 v144.624'/>
+</g>
+<g class='subtree' id='node_int_31'  y='559.453125' transform='translate(77.9809899236288,0)'>
+<path class='hBranch' d='M0,559.453 h-77.981'/>
+<circle class='click_circle' cx='0' cy='559.453125' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree' id='node_int_32'  y='526.40625' transform='translate(83.2410605347189,0)'>
+<path class='hBranch' d='M0,526.406 h-83.241'/>
+<circle class='click_circle' cx='0' cy='526.40625' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree' id='node_int_33'  y='497.8125' transform='translate(35.6340098690649,0)'>
+<path class='hBranch' d='M0,497.812 h-35.634'/>
+<circle class='click_circle' cx='0' cy='497.8125' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree' id='node_int_34'  y='472.5' transform='translate(123.866371798103,0)'>
+<path class='hBranch' d='M0,472.500 h-123.866'/>
+<circle class='click_circle' cx='0' cy='472.5' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree tip' id='node_869211.3'  y='465' transform='translate(2.26289434286774,0)'>
+<path class='hBranch' d='M0,465.000 h-2.263'/>
+<circle class='click_circle' cx='0' cy='465' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='869211.3' x='0' y='465' dy='4' dx='5'>869211.3</text>
+</g>
+<g class='subtree tip' id='node_665571.4'  y='480' transform='translate(2.04013563327318,0)'>
+<path class='hBranch' d='M0,480.000 h-2.040'/>
+<circle class='click_circle' cx='0' cy='480' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='665571.4' x='0' y='480' dy='4' dx='5'>665571.4</text>
+</g>
+<path class='vBranch' d='M0,465.000 v15.000'/>
+</g>
+<g class='subtree' id='node_int_35'  y='523.125' transform='translate(33.0967136784648,0)'>
+<path class='hBranch' d='M0,523.125 h-33.097'/>
+<circle class='click_circle' cx='0' cy='523.125' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree' id='node_int_36'  y='506.25' transform='translate(58.885164437353,0)'>
+<path class='hBranch' d='M0,506.250 h-58.885'/>
+<circle class='click_circle' cx='0' cy='506.25' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree tip' id='node_545695.3'  y='495' transform='translate(40.237797894138,0)'>
+<path class='hBranch' d='M0,495.000 h-40.238'/>
+<circle class='click_circle' cx='0' cy='495' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='545695.3' x='0' y='495' dy='4' dx='5'>545695.3</text>
+</g>
+<g class='subtree' id='node_int_37'  y='517.5' transform='translate(23.6303070738586,0)'>
+<path class='hBranch' d='M0,517.500 h-23.630'/>
+<circle class='click_circle' cx='0' cy='517.5' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree tip' id='node_545694.3'  y='510' transform='translate(19.5483350836356,0)'>
+<path class='hBranch' d='M0,510.000 h-19.548'/>
+<circle class='click_circle' cx='0' cy='510' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='545694.3' x='0' y='510' dy='4' dx='5'>545694.3</text>
+</g>
+<g class='subtree tip' id='node_717227.3'  y='525' transform='translate(20.253408995258,0)'>
+<path class='hBranch' d='M0,525.000 h-20.253'/>
+<circle class='click_circle' cx='0' cy='525' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='717227.3' x='0' y='525' dy='4' dx='5'>717227.3</text>
+</g>
+<path class='vBranch' d='M0,510.000 v15.000'/>
+</g>
+<path class='vBranch' d='M0,495.000 v22.500'/>
+</g>
+<g class='subtree tip' id='node_243275.7'  y='540' transform='translate(132.935995487338,0)'>
+<path class='hBranch' d='M0,540.000 h-132.936'/>
+<circle class='click_circle' cx='0' cy='540' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='243275.7' x='0' y='540' dy='4' dx='5'>243275.7</text>
+</g>
+<path class='vBranch' d='M0,506.250 v33.750'/>
+</g>
+<path class='vBranch' d='M0,472.500 v50.625'/>
+</g>
+<g class='subtree tip' id='node_224326.49'  y='555' transform='translate(238.777949541652,0)'>
+<path class='hBranch' d='M0,555.000 h-238.778'/>
+<circle class='click_circle' cx='0' cy='555' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='224326.49' x='0' y='555' dy='4' dx='5'>224326.49</text>
+</g>
+<path class='vBranch' d='M0,497.812 v57.188'/>
+</g>
+<g class='subtree' id='node_int_38'  y='592.5' transform='translate(221.937403200001,0)'>
+<path class='hBranch' d='M0,592.500 h-221.937'/>
+<circle class='click_circle' cx='0' cy='592.5' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree tip' id='node_1262760.3'  y='570' transform='translate(24.4918328150253,0)'>
+<path class='hBranch' d='M0,570.000 h-24.492'/>
+<circle class='click_circle' cx='0' cy='570' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='1262760.3' x='0' y='570' dy='4' dx='5'>1262760.3</text>
+</g>
+<g class='subtree' id='node_int_39'  y='615' transform='translate(12.0495975295459,0)'>
+<path class='hBranch' d='M0,615.000 h-12.050'/>
+<circle class='click_circle' cx='0' cy='615' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree' id='node_int_40'  y='592.5' transform='translate(15.9744194857712,0)'>
+<path class='hBranch' d='M0,592.500 h-15.974'/>
+<circle class='click_circle' cx='0' cy='592.5' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree tip' id='node_1042417.4'  y='585' transform='translate(0.478098083723664,0)'>
+<path class='hBranch' d='M0,585.000 h-0.478'/>
+<circle class='click_circle' cx='0' cy='585' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='1042417.4' x='0' y='585' dy='4' dx='5'>1042417.4</text>
+</g>
+<g class='subtree tip' id='node_759914.5'  y='600' transform='translate(0.506722144794278,0)'>
+<path class='hBranch' d='M0,600.000 h-0.507'/>
+<circle class='click_circle' cx='0' cy='600' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='759914.5' x='0' y='600' dy='4' dx='5'>759914.5</text>
+</g>
+<path class='vBranch' d='M0,585.000 v15.000'/>
+</g>
+<g class='subtree' id='node_int_41'  y='637.5' transform='translate(7.97919334947043,0)'>
+<path class='hBranch' d='M0,637.500 h-7.979'/>
+<circle class='click_circle' cx='0' cy='637.5' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree tip' id='node_1408430.3'  y='615' transform='translate(11.2598815896373,0)'>
+<path class='hBranch' d='M0,615.000 h-11.260'/>
+<circle class='click_circle' cx='0' cy='615' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='1408430.3' x='0' y='615' dy='4' dx='5'>1408430.3</text>
+</g>
+<g class='subtree' id='node_int_42'  y='660' transform='translate(2.85685870419001,0)'>
+<path class='hBranch' d='M0,660.000 h-2.857'/>
+<circle class='click_circle' cx='0' cy='660' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree' id='node_int_43'  y='637.5' transform='translate(9.42004483259443,0)'>
+<path class='hBranch' d='M0,637.500 h-9.420'/>
+<circle class='click_circle' cx='0' cy='637.5' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree tip' id='node_526224.6'  y='630' transform='translate(3.31475074396836,0)'>
+<path class='hBranch' d='M0,630.000 h-3.315'/>
+<circle class='click_circle' cx='0' cy='630' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='526224.6' x='0' y='630' dy='4' dx='5'>526224.6</text>
+</g>
+<g class='subtree tip' id='node_1267004.3'  y='645' transform='translate(3.01397382563161,0)'>
+<path class='hBranch' d='M0,645.000 h-3.014'/>
+<circle class='click_circle' cx='0' cy='645' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='1267004.3' x='0' y='645' dy='4' dx='5'>1267004.3</text>
+</g>
+<path class='vBranch' d='M0,630.000 v15.000'/>
+</g>
+<g class='subtree' id='node_int_44'  y='682.5' transform='translate(4.68157992060525,0)'>
+<path class='hBranch' d='M0,682.500 h-4.682'/>
+<circle class='click_circle' cx='0' cy='682.5' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree' id='node_int_45'  y='667.5' transform='translate(2.97826061621904,0)'>
+<path class='hBranch' d='M0,667.500 h-2.978'/>
+<circle class='click_circle' cx='0' cy='667.5' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree tip' id='node_1045858.4'  y='660' transform='translate(4.13321926547866,0)'>
+<path class='hBranch' d='M0,660.000 h-4.133'/>
+<circle class='click_circle' cx='0' cy='660' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='1045858.4' x='0' y='660' dy='4' dx='5'>1045858.4</text>
+</g>
+<g class='subtree tip' id='node_565034.3'  y='675' transform='translate(3.98518049590461,0)'>
+<path class='hBranch' d='M0,675.000 h-3.985'/>
+<circle class='click_circle' cx='0' cy='675' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='565034.3' x='0' y='675' dy='4' dx='5'>565034.3</text>
+</g>
+<path class='vBranch' d='M0,660.000 v15.000'/>
+</g>
+<g class='subtree' id='node_int_46'  y='697.5' transform='translate(3.40891383348736,0)'>
+<path class='hBranch' d='M0,697.500 h-3.409'/>
+<circle class='click_circle' cx='0' cy='697.5' onclick='node_clicked(this.parentNode)'/>
+<g class='subtree tip' id='node_1287056.3'  y='690' transform='translate(3.37105096060158,0)'>
+<path class='hBranch' d='M0,690.000 h-3.371'/>
+<circle class='click_circle' cx='0' cy='690' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='1287056.3' x='0' y='690' dy='4' dx='5'>1287056.3</text>
+</g>
+<g class='subtree tip' id='node_1289135.4'  y='705' transform='translate(3.90213824147655,0)'>
+<path class='hBranch' d='M0,705.000 h-3.902'/>
+<circle class='click_circle' cx='0' cy='705' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='1289135.4' x='0' y='705' dy='4' dx='5'>1289135.4</text>
+</g>
+<path class='vBranch' d='M0,690.000 v15.000'/>
+</g>
+<path class='vBranch' d='M0,667.500 v30.000'/>
+</g>
+<path class='vBranch' d='M0,637.500 v45.000'/>
+</g>
+<path class='vBranch' d='M0,615.000 v45.000'/>
+</g>
+<path class='vBranch' d='M0,592.500 v45.000'/>
+</g>
+<path class='vBranch' d='M0,570.000 v45.000'/>
+</g>
+<path class='vBranch' d='M0,526.406 v66.094'/>
+</g>
+<g class='subtree tip' id='node_869212.3'  y='720' transform='translate(156.578811783738,0)'>
+<path class='hBranch' d='M0,720.000 h-156.579'/>
+<circle class='click_circle' cx='0' cy='720' onclick='node_clicked(this.parentNode)'/>
+<text class='tip_name' id='869212.3' x='0' y='720' dy='4' dx='5'>869212.3</text>
+</g>
+<path class='vBranch' d='M0,87.312 v632.688'/>
+</g>
+</g>
+</svg>

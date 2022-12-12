@@ -1,0 +1,22 @@
+body {
+  background-color: lightgray;
+}
+
+h1 {
+  color: navy;
+  margin-left: 20px;
+}
+
+table {
+  border-collapse: collapse;
+  background-color: 'white';
+}
+table, th, td {
+  border: 1px solid;
+}
+.tree {background-color: 'white'}
+
+.tree_link { background-color: 'forestgreen'; cursor: pointer;}
+.taxon_link { background-color: 'yellow'; cursor: pointer;}
+
+.highlight { color: red }

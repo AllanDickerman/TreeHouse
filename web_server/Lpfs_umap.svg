@@ -1,0 +1,56 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='-3.392 -1.304 6.856 2.846' style='background-color: white; border: 1px solid rgb(144, 144, 144); font-size: 12px;'>
+<style>
+    .highlight { fill: blue; }
+</style>
+<script type='text/javascript'>
+point_clicked=function(target) {console.log(target.id)}
+</script>
+<circle id='1001595.3' cx='-3.01738621725503', cy='0.994935009684527', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='1042417.4' cx='2.46698847206345', cy='-0.330109828659744', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='1045858.4' cx='2.92444365628877', cy='0.631492225104736', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='1049759.3' cx='-2.57386535887418', cy='0.619296177672451', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='1049789.4' cx='-0.515552300990013', cy='-0.261245869056282', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='1049790.3' cx='-0.579793042895269', cy='-0.782455070793333', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='1049941.3' cx='-2.72687038015496', cy='0.666715111675151', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='1049970.3' cx='-1.8128922092721', cy='0.3831898873489', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='1049972.3' cx='-0.219707572642874', cy='-0.974676531644437', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='1085538.3' cx='-3.13681297920347', cy='1.30001537272149', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='1088540.3' cx='-2.84044297144634', cy='0.665808934556842', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='1192864.3' cx='-2.70534019758054', cy='0.205030523058341', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='1193011.3' cx='-0.117274965650821', cy='-0.585178983212711', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='1193012.3' cx='-1.94579835424678', cy='0.789936911297667', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='1193051.3' cx='-0.419038880103088', cy='-0.862908967742478', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='1193069.3' cx='-0.434006836058874', cy='-0.726061468232124', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='1218565.3' cx='-1.70249149756063', cy='0.624062951855708', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='1218591.3' cx='2.33590070075304', cy='-0.814934264446827', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='1218599.3' cx='-0.17766593659683', cy='-0.92405763763282', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='1249483.3' cx='-0.0792197350838104', cy='-1.0459346221974', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='1257025.3' cx='-0.277066610260435', cy='-0.729005069871645', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='1262760.3' cx='2.76849142706755', cy='-0.507993175733474', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='1267004.3' cx='2.8321771718484', cy='0.876511802183028', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='1287056.3' cx='3.05679983692599', cy='0.495550946771004', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='1289135.4' cx='3.03640172256112', cy='0.163635871517433', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='1408430.3' cx='3.29962178001355', cy='0.843595901342907', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='189518.3' cx='-3.23019708849278', cy='1.46652931115279', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='2023191.3' cx='0.0935039951209973', cy='-0.950754300345036', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='224326.49' cx='2.38643643161566', cy='-1.01347957536885', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='243275.7' cx='2.20729898840259', cy='-0.0573578600037706', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='2484979.4' cx='0.774007250945057', cy='-0.797081879394788', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='267671.5' cx='-3.01532353323191', cy='1.46836319365632', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='355276.3' cx='-2.59917826106539', cy='0.363756694272869', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='456481.4' cx='0.388177991796396', cy='-1.020571333111', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='526224.6' cx='3.23170343605496', cy='0.624741262027838', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='545694.3' cx='-1.89278018057723', cy='0.708863351695106', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='545695.3' cx='-1.38412537280027', cy='0.491127272787177', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='565034.3' cx='2.65779938868071', cy='0.0811913454190353', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='665571.4' cx='2.50554936993378', cy='-0.888333867245095', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='717227.3' cx='-1.61510643075023', cy='0.653687386218581', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='758847.3' cx='-1.44409864858805', cy='0.133696841043132', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='759914.5' cx='2.49197411035964', cy='-0.50234998946477', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='869211.3' cx='2.41205360444828', cy='-1.24234409857227', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='869212.3' cx='1.56126185225759', cy='-0.364528709797117', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='929563.3' cx='1.90446237190051', cy='-0.62915627307093', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='996804.3' cx='-3.11272007223598', cy='0.898105890762104', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='996805.3' cx='-2.11621131458575', cy='0.393444845201275', r='0.04', fill='black', onclick='point_clicked(this)'/>
+<circle id='996808.3' cx='0.35591338916559', cy='-0.5327656454295', r='0.04', fill='black', onclick='point_clicked(this)'/>
+</svg>
