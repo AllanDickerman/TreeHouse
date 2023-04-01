@@ -31,18 +31,22 @@ class TreeHandler(BaseHTTPRequestHandler):
             with open(path) as file_to_serve:
                 self.wfile.write(bytes(file_to_serve.read(), "utf-8"))
             return
-        elif path == 'taxon':
+        elif path == 'tree':
             query_parts = parsed.query.split("&")
-            taxon = query_parts[0]
-            stop_ranks = None
-            print("   taxon={}".format(taxon))
-            if len(query_parts) > 0:
-                stop_ranks = re.findall("stop_at=(\w)", parsed.query)
-                print("   stop_ranks={}".format(stop_ranks))
-            tree_html = gtdbData.get_gtdb_taxon_tree(taxon, stop_ranks)
+            tree = query_parts[0]
+            taxon = None
+            stop_rank = None
+            for part in query_parts[1:]:
+                if part.startswith("taxon="):
+                    taxon = part.split('=')[1]
+                    print("   taxon={}".format(taxon))
+                if part.startswith("stop_at="):
+                    stop_rank = part.split('=')[1]
+                    print("   stop_rank={}".format(stop_rank))
+            tree_html = gtdbData.get_tree_html(tree, taxon, stop_rank)
             self.wfile.write(bytes(tree_html, "utf-8"))
-        elif path == 'list':
-            list_html = gtdbData.get_taxon_list()
+        elif (path == 'list') or path == '':
+            list_html = gtdbData.get_tree_list_html()
             self.wfile.write(bytes(list_html, "utf-8"))
         else:
             self.wfile.write(bytes("<html><head><title>Uninterpretable Request</title></head>", "utf-8"))
@@ -54,34 +58,37 @@ class TreeHandler(BaseHTTPRequestHandler):
         return
 
 def new_record(tag, start, nest_level):
-    retval = {'tag':tag, 'start': start, 'nest_level':nest_level, 'max_nest_level': nest_level, 'name':'', 'end':start, 'num_tips':0, 'num_genera':0}
+    retval = {'tag':tag, 'start': start, 'nest_level':nest_level, 'max_nest_level': nest_level, 'name':'', 'end':start, 'num_tips':0, 'num_genera':0, 'num_families':0}
     return retval
         
 class GtdbData:
     def __init__(self, data_dir, input_tree):
         self.trees = {}
-        self.record_by_taxon = {}
-        if not input_tree:
-            tree_files = glob.glob(data_dir+"/*tree")
-            for file in tree_files:
-                for div in ['bac', 'arc']:
-                    if div in file:
-                        if div in self.trees:
-                            raise Exception("ambiguous tree for div "+div)
-                        with open(data_dir+"/"+file) as F:
-                            tree = F.read().rstrip()
-                            self.trees[div] = tree
-                            self.index_tree(div, tree)
-                            print("got tree for {}, len {}, ex: {}\n".format(div, len(tree), tree[0:20]))
-        else:
+        self.tree_taxon = {}
+        if input_tree:
+            tree_tag = os.path.basename(input_tree)
+            tree_tag = tree_tag.replace(".tree", "")
+            tree_tag = tree_tag.replace(".nwk", "")
             with open(input_tree) as F:
                 tree = F.read().rstrip()
-                self.trees['bac'] = tree
-                self.index_tree('bac', tree)
+                self.trees[tree_tag] = tree
+                self.index_tree(tree_tag, tree)
                 print("got tree for {}, len {}, ex: {}\n".format('bac', len(tree), tree[0:20]))
+        else:
+            tree_files = glob.glob(data_dir+"/*tree")
+            for file in tree_files:
+                tree_tag = os.path.basename(file)
+                tree_tag = tree_tag.replace(".tree", "")
+                tree_tag = tree_tag.replace(".nwk", "")
+                with open(data_dir+"/"+file) as F:
+                    tree = F.read().rstrip()
+                    self.trees[tree_tag] = tree
+                    self.index_tree(tree_tag, tree)
+                    print("got tree for {}, len {}, ex: {}\n".format(tree_tag, len(tree), tree[0:20]))
 
 
     def index_tree(self, tag, newick):
+        self.tree_taxon[tag] = {}
         nest_level = 0
         record_by_nest = []
         print("newick=\n{}\n".format(newick))
@@ -153,11 +160,14 @@ class GtdbData:
                             record['support'] = support
                             for taxon in name.split(";"):
                                 taxon = taxon.strip() # blank space follows ;
-                                self.record_by_taxon[taxon] = record
+                                self.tree_taxon[tag][taxon] = record
                                 print(" saved record for taxon {}".format(taxon))
                                 if taxon.startswith("g__"):
                                     for rec in record_by_nest:
                                         rec['num_genera'] = rec['num_genera'] + 1
+                                if taxon.startswith("f__"):
+                                    for rec in record_by_nest:
+                                        rec['num_families'] = rec['num_families'] + 1
 
                         index = end - 1
                         record['end'] = end-1
@@ -204,38 +214,44 @@ class GtdbData:
             return None
         return tree_str[start_of_subtree : end_of_subtree]+";"
 
-    def get_taxon_list(self):
+    def get_tree_list_html(self):
         print("get_taxon_list()")
-        #for taxon in self.record_by_taxon:
-            #print(record_by_taxon[taxon])
+        #for taxon in self.tree_taxon:
+            #print(tree_taxon[taxon])
         retval = "<html><head>\n"
         retval += "<link rel='stylesheet' href='tree_style.css'>\n"
         retval += "</head><body>\n"
-        retval += "<h3>GTDB Taxa {}</h3>\n"
+        retval += "<h3>GTDB Trees</h3>\n"
+        for tree in sorted(self.trees):
+            retval += "<p><a href='tree?{}'>{}</p>\n".format(tree, tree)
 
         retval += "<table>"
-        retval += "<tr><th>Taxon Name</th><th>Genera</th><th>Tips</th></tr>\n";
-        for taxon in sorted(self.record_by_taxon):
-            record = self.record_by_taxon[taxon]
-            retval += "<tr><td onclick=\"window.location.href='taxon?{}'\">{}</td><td onclick=\"window.location.href='taxon?{}&stop_at=genus'\">{}</td><td>{}</td></tr>\n".format(taxon, taxon, taxon, record['num_genera'], record['num_tips'])
+        retval += "<tr><th>Tree</th><th>Taxon</th><th>Tips</th><th>Genera</th><th>Families</th></tr>\n";
+        for tree in sorted(self.trees):
+            for taxon in sorted(self.tree_taxon[tree]):
+                record = self.tree_taxon[tree][taxon]
+                retval += "<tr><td onclick=\"window.location.href='taxon?{}'\">{}</td><td>{}</td><td onclick=\"window.location.href='taxon?{}&stop_at=genus'\">{}</td><td onclick=\"window.location.href='taxon?{}&stop_at=family'\">{}</td></tr>\n".format(taxon, taxon, record['num_tips'], taxon, record['num_genera'], taxon, record['num_families'])
         retval += "</table>\n"
         retval += "</html>\n"
         return retval
 
-    def get_gtdb_taxon_tree(self, taxon, stop_ranks=None):
-        print("tree_data.show_gtdb_taxon_tree()")
-        if taxon in self.record_by_taxon:
-            record = self.record_by_taxon[taxon]
+    def get_tree_html(self, tag, taxon=None, stop_rank=None):
+        print("tree_data.show_gtdb_taxon_tree({} {} {})".format(tag, taxon, stop_rank))
+
+        if taxon:
+            if taxon in self.tree_taxon:
+                record = self.tree_taxon[taxon]
+                newick = self.trees[tag][record['start']:record['end']]
+            else:
+                return "<html>No taxon named {} found.</html>".format(taxon)
         else:
-            return "<html>No taxon named {} found.</html>".format(taxon)
+            newick = self.trees[tag]
             
-        div = record['tag']
-        newick = self.trees[div][record['start']:record['end']]
         print("newick = "+newick)
         retval = "<html><head>\n"
         retval += "<link rel='stylesheet' href='tree_style.css'>\n"
         retval += "</head><body>\n"
-        retval += "<h3>GTDB Taxon {}</h3>\n".format(taxon)
+        retval += "<h3>Tree {} {}</h3>\n".format(tag, taxon)
 
         retval += "<table>"
         if (1):
@@ -274,13 +290,12 @@ class GtdbData:
 
         retval += "<script type='text/javascript' src='gtdb_tree.js'></script>\n";
         retval += "<script type='text/javascript'>\n";
-        retval += "const newick = \""+newick+"\";\n" 
-        retval += "const debug = true\n" 
+        retval += "const newick_tree_string = \""+newick+"\";\n" 
+        retval += "debug = true\n" 
         #retval += "const tip_label = "+json.dumps(tip_label, indent=4)+";\n"  
-        if (stop_ranks):
-            retval += "\nparse_gtdb_newick(newick, stop_ranks=['"+ "','".join(stop_ranks)+"'])\n"
-        else:
-            retval += "\nparse_gtdb_newick(newick)\n"
+        if (stop_rank):
+            retval += "\nstop_rank='"+stop_rank+"'\n"
+        retval += "\ncreate_gtdb_tree(newick_tree_string)\n"
         retval += "\n</script>\n";
             
         retval += "</body></html>"
