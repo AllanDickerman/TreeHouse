@@ -5,24 +5,24 @@ let x_scale = 100
 let num_tips = 0 // number of tips on the tree
 let node_num = 0 // number of nodes in the tree
 let stop_rank = ''; 
-let debug = false
+let debug = 0
 let annotation = null;
 
-console.log("loading gtdb_tree.js")
+console.log("loading bvbrc_tree.js")
 
 get_root = function() {
 	return svgDocument.querySelector('.subtree')
 }
 process_json_newick = function() {
 	console.log("newick = "+newick)
-	create_gtdb_tree(newick)
+	create_tree(newick)
 	initialize_annotation(tip_label)
 }
 
-create_gtdb_tree = function(nwk_string, input_annotation=null, initial_label=null) {
+create_tree = function(nwk_string, input_annotation=null, initial_label=null) {
 	container = document.getElementById('svg_container');
-	console.log("create_gtdb_tree:"+nwk_string.substring(0,12))
-	if (stop_rank)
+	console.log("create_bvbrc_tree:"+nwk_string.substring(0,12))
+	if (stop_rank & debug)
 		console.log("stop_rank="+stop_rank)
 	svgDocument = document.createElementNS(ns, "svg")
 	container.appendChild(svgDocument)
@@ -40,11 +40,11 @@ create_gtdb_tree = function(nwk_string, input_annotation=null, initial_label=nul
     	let sheet;
 	for(var i=0, length=sheets.length; i<length; i++){
 	   sheet=sheets.item(i);
-	   if (sheet.ownerNode == stylesheet) 
+	   if (sheet.ownerNode == stylesheet) i
 		break;
 	}
 	sheet.insertRule(".highlight{fill:red;}", 0);
-	sheet.insertRule("circle{r: 5; fill: red; opacity: 0.3; cursor: pointer}", 0);
+	sheet.insertRule("circle{r: 5; fill: red; opacity: 0.0; cursor: pointer}", 0);
 	sheet.insertRule(".tip{font-family: Arial, sans-serif; font-size: 10px; fill: blue}", 0);
 	//sheet.insertRule("circle.tip{fill: orange}", 0);
 	sheet.insertRule("circle.taxon{fill: red}", 0);
@@ -65,7 +65,7 @@ create_gtdb_tree = function(nwk_string, input_annotation=null, initial_label=nul
 	num_tips = 0
 	node_num = 0
 	let going_down = false
-	parse_gtdb_newick(0, nwk_len, svgDocument)
+	parse_newick(0, nwk_len, svgDocument)
 	const root = get_root()
 	root.transform.baseVal[0].matrix.e = delta_y
 	root.transform.baseVal[0].matrix.f = 3*delta_y
@@ -80,6 +80,9 @@ create_gtdb_tree = function(nwk_string, input_annotation=null, initial_label=nul
 	embed_tree_y()
 	embed_tree_x()
 	svgDocument.setAttribute("height", (num_tips+4)*delta_y)
+	//container.setAttribute("height", (num_tips+4)*delta_y)
+	resizeTreeContainer()
+	window.onresize = resizeTreeContainer;
 	//console.log('check tree structure')
 	if (input_annotation) {
 		console.log("input annotation provided")
@@ -89,6 +92,30 @@ create_gtdb_tree = function(nwk_string, input_annotation=null, initial_label=nul
 			initialize_annotation(initial_label)
 		}
 	}
+	if (annotation_labels) {
+		//create empty slots in annotation that can be retrieved later
+		if (! annotation) {
+			annotation = []
+		}
+		for (const label in annotation_labels) {
+			annotation[label] = null
+		}
+	}
+
+}
+
+function resizeTreeContainer(e) {
+	var height = 0;
+	var body = window.document.body;
+	if (window.innerHeight) {
+		height = window.innerHeight;
+	} else if (body.parentElement.clientHeight) {
+		height = body.parentElement.clientHeight;
+	} else if (body && body.clientHeight) {
+		height = body.clientHeight;
+	}
+	container = document.getElementById('svg_container');
+  	container.style.height = ((height - container.offsetTop) + "px");
 }
 
 create_node = function(node_id, parent_node, node_label='', branch_length=0, node_support=0) {
@@ -106,7 +133,8 @@ create_node = function(node_id, parent_node, node_label='', branch_length=0, nod
 		parent_node.appendChild(group)
 		parent_node.classList.remove('tip')
 	}
-	console.log(message)
+	if (debug > 1)
+		console.log(message)
 
 	transform = svgDocument.createSVGTransform()
 	group.transform.baseVal.initialize(transform);
@@ -114,7 +142,7 @@ create_node = function(node_id, parent_node, node_label='', branch_length=0, nod
 	let circle = document.createElementNS(ns, "circle")
 	circle.setAttribute('cx', '0')
 	circle.setAttribute('cy', '0')
-	circle.setAttribute('z', '100')
+	circle.setAttribute('z', '-1') 
 	circle.onclick=node_clicked
 	circle.classList.add('clickCircle')
 	group.appendChild(circle)
@@ -150,12 +178,12 @@ set_node_depth_from_children = function(node) {
 					max_child_depth = child_depth
 			}
 		}
-		if (max_child_depth == 0)
-			throw("Hey, max child depth is 0 in set_node_depth_from_children!")
+		//if (max_child_depth == 0)
+		//	throw("Hey, max child depth is 0 in set_node_depth_from_children!")
 	}
 	let depth = parseFloat(node.getAttribute('bl')) + max_child_depth;
 	node.setAttribute('depth', depth)
-	if (debug) {
+	if (debug > 1) {
 		console.log("set_node_depth_from_children("+node.getAttribute('id')+")\nmax_child_depth="+max_child_depth+", depth="+depth)
 	}
 }
@@ -173,7 +201,8 @@ set_node_support = function(node, value) {
 
 set_node_label_vis = function(node, is_tip) { 
 	let label = node.getAttribute('label')
-	console.log("set label: "+label+", is_tip="+is_tip)
+	if (debug > 1)
+		console.log("set label: "+label+", is_tip="+is_tip)
 	if (label.length == 0)
 		return // no label
 	let element_type = is_tip ? "text" : "title"
@@ -242,7 +271,7 @@ embed_node_y = function(node) {
 }
 
 embed_node_x = function(node) {
-	if (debug) {
+	if (debug > 2) {
 		console.log("embed_node_x("+node.getAttribute('id')+", p: "+node.parentNode.getAttribute('id')+", s:"+x_scale)
 	}
 	if (node.tagName != 'g')
@@ -275,7 +304,7 @@ embed_node_x = function(node) {
 expand_node = function(head_node) {
 	let start = head_node.getAttribute("newick_start")
 	let end = head_node.getAttribute("newick_end")
-	parse_gtdb_newick(start, end, head_node)
+	parse_newick(start, end, head_node)
 	set_node_label_vis(head_node, false) // show taxon label for tips, tooltip otherwise
 	update_node_ordinal_from_children(head_node)
 	const root = get_root()
@@ -289,10 +318,10 @@ expand_node = function(head_node) {
 	svgDocument.setAttribute("height", (num_tips+4)*delta_y)
 }
 
-parse_gtdb_newick = function(start, end, start_node) {
+parse_newick = function(start, end, start_node) {
 	// read from global newick string
 	//debugger
-	console.log("parse_gtdb_newick("+start+", "+end)
+	console.log("parse_newick("+start+", "+end)
 	num_tips // global 
 	node_num // global
 	let going_down = false
@@ -307,7 +336,8 @@ parse_gtdb_newick = function(start, end, start_node) {
 		}
 		prev_i = index
 		if (tree_char == ')') {
-			console.log("got ), nest_level="+nest_level)
+			if (debug > 1) 
+				console.log("got ), nest_level="+nest_level)
 			nest_level--
 			newly_added_tip = false
 			going_down = true
@@ -338,7 +368,7 @@ parse_gtdb_newick = function(start, end, start_node) {
 		else { // must be making of a new node -- either terminal or internal
 			let is_tip = true
 			let start_node_info_pos = index
-			if (debug)
+			if (debug > 1)
 				console.log('start new node (or origin) ')
 			if (tree_char == '(') {
 				is_tip = false
@@ -372,36 +402,41 @@ parse_gtdb_newick = function(start, end, start_node) {
 				}
 			}
 			let node_label = newick.substring(start_node_info_pos, end_node_info_pos)
-			console.log("node info: "+node_label)
-			let branch_length = 0.0
+			if (debug > 1)
+				console.log("node info: "+node_label)
+			let branch_length = 1.0
 			let matchResult = node_label.match(/(.*):(\d+\.\d+)$/)
 			if (matchResult) {
-				console.log('bl regex result: '+matchResult)
 				branch_length = parseFloat(matchResult[2])
 				node_label = matchResult[1]
+				if (debug > 1)
+					console.log('bl regex result: '+branch_length+", label="+node_label)
 			}
 			let support = 0.0
 			node_label = node_label.replace(/^'|'$/g, '') // strip off quotes
-			matchResult = node_label.match(/^([\d.]+)(.*)/)
-			if (matchResult) {
-				console.log('sup regex result: '+matchResult)
-				support = parseFloat(matchResult[1])
-				node_label = matchResult[2]
-				node_label = node_label.replace(/^:/, '')
+			if (! is_tip) { // if not tip, label may be support value - if it is a number
+				matchResult = node_label.match(/^([\d.]+)(.*)/)
+				if (matchResult) {
+					if (debug > 1)
+						console.log('sup regex result: '+matchResult)
+					support = parseFloat(matchResult[1])
+					node_label = matchResult[2]
+					node_label = node_label.replace(/^:/, '')
+				}
 			}
 			let rank = ''
 			matchResult = node_label.match(/(\w)__/)
 			if (matchResult) {
-				console.log('rank regex result: '+matchResult)
+				if (debug > 1)
+					console.log('rank regex result: '+matchResult)
 				rank = matchResult[1] // just grab first one (can be multiple, ordered?)
 			}
 			//debugger
-			//console.log('prior to testing to create node, label: '+node_label)
 			node_num++
 			let node_id = node_label
 			if (node_label.length == 0)
 				node_id = "Node_"+node_num //create a unique id
-			//console.log('here! label='+node_label)
+
 			cur_node = create_node(node_id, parent_node = cur_node, node_label=node_label, branch_length=branch_length, node_support=support)
 			if ((stop_rank != '') & (stop_rank == rank)) {
 				if (debug)
@@ -419,7 +454,7 @@ parse_gtdb_newick = function(start, end, start_node) {
 			nest_level++
 		}
 		if (going_down) {
-			if (debug)
+			if (debug > 1)
 				console.log("going down: cur_node = "+cur_node.getAttribute('id'))
 			set_node_depth_from_children(cur_node)
 			//debugger
@@ -489,17 +524,19 @@ traverse_subtree = function(target) { // node on tree(g element)
 			comment = "visiting "+node_id
 			if (node.hasAttribute('y'))
 				comment += ", y="+get_node_ypos(node)
-			console.log(comment)
+			if (debug)
+				console.log(comment)
 		}
 		let next_node = null;
 		for (const child of node.children) {
-			if (child.tagName == 'text') { // assume only tip nodes have a text child
+			if (child.tagName == 'text' & debug > 1) { // assume only tip nodes have a text child
 				console.log(" text child="+child.id+",  visited="+ visited[child.id]+", y="+child.getAttribute('y'))
 			}
 			else if (child.tagName == 'g') {
 				if (! visited[child.id]) {
 					next_node = child;
-					console.log("going up to "+next_node.id)
+					if (debug > 1)
+						console.log("going up to "+next_node.id)
 					break;
 				}
 			}
@@ -509,7 +546,8 @@ traverse_subtree = function(target) { // node on tree(g element)
 			//console.log("about to update node ypos for node "+node.id);
 			done[node_id] = true;
 			next_node = node.parentNode;
-			console.log("going down to "+next_node.id+", done="+done[target_id])
+			if (debug > 2)
+				console.log("going down to "+next_node.id+", done="+done[target_id])
 		}
 		node = next_node;
 	}
@@ -527,9 +565,10 @@ set_tip_order = function(target, min_ord = 0) {
 		if (! visited[node.id]) {
 			// pre-order operations
 			visited[node.id] = true
-			console.log("visiting "+node.id)
+			if (debug > 1)
+				console.log("visiting "+node.id)
 			if (node.matches(".tip") & node.tagName == 'g') {
-				console.log(" tip child="+node.id+",  curord="+ cur_ordinal)
+				//console.log(" tip child="+node.id+",  curord="+ cur_ordinal)
 				set_node_ordinal(node, cur_ordinal)
 				cur_ordinal++
 			}
@@ -539,7 +578,8 @@ set_tip_order = function(target, min_ord = 0) {
 			if (child.tagName == 'g') {
 				if (! visited[child.id]) {
 					next_node = child;
-					console.log("going up to "+next_node.id)
+					if (debug > 1)
+						console.log("going up to "+next_node.id)
 					break;
 				}
 			}
@@ -550,7 +590,8 @@ set_tip_order = function(target, min_ord = 0) {
 			update_node_ordinal_from_children(node);
 			done[node.id] = true;
 			next_node = node.parentNode;
-			console.log("going down to "+next_node.id+", done="+done[target.id])
+			if (debug > 1)
+				console.log("going down to "+next_node.id+", done="+done[target.id])
 		}
 		node = next_node;
 	}
@@ -560,10 +601,12 @@ set_tip_order = function(target, min_ord = 0) {
 swap_descendants = function(target) { // assumes bifurcating tree (two subtrees per node)
 	let firstChild = null
 	let lastChild 
-	console.log('swap_descendants: '+target.id)
+	if (debug > 1)
+		console.log('swap_descendants: '+target.id)
 	for (child of target.children) {
 		if (child.tagName == 'g') {
-			console.log('child: '+child.id+", "+child.getAttribute('ordinal'))
+			if (debug > 1)
+				console.log('child: '+child.id+", "+child.getAttribute('ordinal'))
 			if (firstChild)
 				lastChild = child
 			else
@@ -571,11 +614,13 @@ swap_descendants = function(target) { // assumes bifurcating tree (two subtrees 
 		}
 	}
 	// swap order of nodes, put last node first
-	console.log("swap children: "+lastChild.getAttribute('id')+", "+firstChild.getAttribute('id'))
+	if (debug > 1)
+		console.log("swap children: "+lastChild.getAttribute('id')+", "+firstChild.getAttribute('id'))
 	target.insertBefore(lastChild, firstChild);
-	for (child of target.children) 
-		if (child.tagName == 'g') 
-			console.log('child: '+child.id+", "+child.getAttribute('ordinal'))
+	if (debug > 1)
+		for (child of target.children) 
+			if (child.tagName == 'g') 
+				console.log('child: '+child.id+", "+child.getAttribute('ordinal'))
 }
 
 orderTree=function(larger_subtrees_up=false) {
@@ -641,7 +686,8 @@ orderTree=function(larger_subtrees_up=false) {
 
 update_node_ordinal_from_children = function(target) {// assume tip nodes have had ordinal pos set, update (fractional) ordinal pos of interior nodes
 	if (target.matches('.tip')) {
-		console.log("up..ord: terminal node, ordinal="+target.getAttribute('ordinal'))
+		if (debug > 1)
+			console.log("up..ord: terminal node, ordinal="+target.getAttribute('ordinal'))
 		return(0)
 	}
 	let new_ord = 0;

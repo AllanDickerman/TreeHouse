@@ -11,11 +11,11 @@ import os.path
 import tempfile
 import glob
 
-tree_data_dir = '.' #'../gtdb'
+tree_data = '.' #'../gtdb'
 hostName = "localhost"
 serverPort = 8080
 gtdbData = None
-input_tree = sys.argv[1]
+tree_data = sys.argv[1]
 
 class TreeHandler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -45,7 +45,7 @@ class TreeHandler(BaseHTTPRequestHandler):
                     print("   stop_rank={}".format(stop_rank))
             tree_html = gtdbData.get_tree_html(tree, taxon, stop_rank)
             self.wfile.write(bytes(tree_html, "utf-8"))
-        elif (path == 'list') or path == '':
+        elif (path == 'list') or not path:
             list_html = gtdbData.get_tree_list_html()
             self.wfile.write(bytes(list_html, "utf-8"))
         else:
@@ -62,30 +62,57 @@ def new_record(tag, start, nest_level):
     return retval
         
 class GtdbData:
-    def __init__(self, data_dir, input_tree):
+    def __init__(self, input_data):
         self.trees = {}
         self.tree_taxon = {}
-        if input_tree:
-            tree_tag = os.path.basename(input_tree)
+        if os.path.isfile(input_data):
+            tree_tag = os.path.basename(input_data)
             tree_tag = tree_tag.replace(".tree", "")
             tree_tag = tree_tag.replace(".nwk", "")
-            with open(input_tree) as F:
+            with open(input_data) as F:
                 tree = F.read().rstrip()
                 self.trees[tree_tag] = tree
                 self.index_tree(tree_tag, tree)
                 print("got tree for {}, len {}, ex: {}\n".format('bac', len(tree), tree[0:20]))
         else:
-            tree_files = glob.glob(data_dir+"/*tree")
+            tree_files = glob.glob(input_data+"/*tree")
             for file in tree_files:
                 tree_tag = os.path.basename(file)
                 tree_tag = tree_tag.replace(".tree", "")
                 tree_tag = tree_tag.replace(".nwk", "")
-                with open(data_dir+"/"+file) as F:
+                with open(file) as F:
                     tree = F.read().rstrip()
                     self.trees[tree_tag] = tree
-                    self.index_tree(tree_tag, tree)
+                    #self.index_tree(tree_tag, tree)
                     print("got tree for {}, len {}, ex: {}\n".format(tree_tag, len(tree), tree[0:20]))
+        self.read_gtdb_taxonomy("../gtdb/bac120_representative_taxonomy.tsv")
+        self.read_gtdb_bvbrc_ids("../gtdb/bac120_representative_to_bvbrc.ids")
+        self.read_bvbrc_taxonomy("../gtdb/bvbrc_genomes_in_gtdb_tree.txt")
 
+    def read_gtdb_taxonomy(self, file_name):
+        self.gtdb_species = {}
+        with open(file_name) as F:
+            for line in F:
+                gtdb_id, lineage = line.rstrip().split("\t")
+                taxa = lineage.split(";")
+                species = taxa[-1]
+                self.gtdb_species[gtdb_id] = species
+    
+    def read_gtdb_bvbrc_ids(self, file_name):
+        self.bvbrc_id = {}
+        with open(file_name) as F:
+            for line in F:
+                gtdb_id, bvbrc_id = line.rstrip().split("\t")
+                self.bvbrc_id[gtdb_id] = bvbrc_id
+
+    def read_bvbrc_taxonomy(self, file_name):
+        self.bvbrc_name = {}
+        with open(file_name) as F:
+            for line in F:
+                fields = line.rstrip().split("\t")
+                bvbrc_id = fields[0]
+                genome_name = fields[1]
+                self.bvbrc_name[bvbrc_id] = genome_name
 
     def index_tree(self, tag, newick):
         self.tree_taxon[tag] = {}
@@ -223,15 +250,16 @@ class GtdbData:
         retval += "</head><body>\n"
         retval += "<h3>GTDB Trees</h3>\n"
         for tree in sorted(self.trees):
-            retval += "<p><a href='tree?{}'>{}</p>\n".format(tree, tree)
+            retval += "<a href='tree?{}'>{}<br>\n".format(tree, tree)
 
-        retval += "<table>"
-        retval += "<tr><th>Tree</th><th>Taxon</th><th>Tips</th><th>Genera</th><th>Families</th></tr>\n";
-        for tree in sorted(self.trees):
-            for taxon in sorted(self.tree_taxon[tree]):
-                record = self.tree_taxon[tree][taxon]
-                retval += "<tr><td onclick=\"window.location.href='taxon?{}'\">{}</td><td>{}</td><td onclick=\"window.location.href='taxon?{}&stop_at=genus'\">{}</td><td onclick=\"window.location.href='taxon?{}&stop_at=family'\">{}</td></tr>\n".format(taxon, taxon, record['num_tips'], taxon, record['num_genera'], taxon, record['num_families'])
-        retval += "</table>\n"
+        if (False):
+            retval += "<table>"
+            retval += "<tr><th>Tree</th><th>Taxon</th><th>Tips</th><th>Genera</th><th>Families</th></tr>\n";
+            for tree in sorted(self.trees):
+                for taxon in sorted(self.tree_taxon[tree]):
+                    record = self.tree_taxon[tree][taxon]
+                    retval += "<tr><td onclick=\"window.location.href='tree?{}'\">{}</td><td onclick=\"window.location.href='tree?{}&taxon={}'\">{}</td><td>{}</td><td> onclick=\"window.location.href='tree?{}&taxon={}&stop_at=genus'\">{}</td><td onclick=\"window.location.href='tree?{}&taxon={}&stop_at=family'\">{}</td></tr>\n".format(tree, tree, tree, taxon, taxon, record['num_tips'], tree, taxon, record['num_genera'], tree, taxon, record['num_families'])
+            retval += "</table>\n"
         retval += "</html>\n"
         return retval
 
@@ -251,6 +279,7 @@ class GtdbData:
         retval = "<html><head>\n"
         retval += "<link rel='stylesheet' href='tree_style.css'>\n"
         retval += "</head><body>\n"
+        retval += "<p><a href='/'>Home</a></p>\n"
         retval += "<h3>Tree {} {}</h3>\n".format(tag, taxon)
 
         retval += "<table>"
@@ -265,6 +294,7 @@ class GtdbData:
         retval += "<option value='highlight'>Highlight Nodes</option>\n"
         retval += "<option value='nodeinfo'>Node Info</option>\n"
         retval += "<option value='swap'>Swap Children</option>\n"
+        retval += "<option value='expand'>Expand Taxon</option>\n"
         retval += "<option value='newick'>Newick Subtree</option>\n"
         retval += "</select>\n"
         retval += "&nbsp;";
@@ -277,6 +307,7 @@ class GtdbData:
         #retval += "<option value='generate_json_newick'>Generate Json Newick</option>\n"
         retval += "<option value='order_tree_up'>Order Tree Up</option>\n"
         retval += "<option value='order_tree_down'>Order Tree Down</option>\n"
+        retval += "<option value='save_svg'>Save as SVG</option>\n"
         retval += "</select>\n"
         retval += "</td></tr></table>"
 
@@ -285,17 +316,30 @@ class GtdbData:
 
         #genome_taxon = {}
         genome_ids = re.findall("[(,]([^(),:]+)", newick)
+        annotation = {}
+        annotation['gtdb_species'] = {}
+        annotation['bvbrc_id'] = {}
+        annotation['bvbrc_name'] = {}
+        for gtdb_id in genome_ids:
+            annotation['gtdb_species'][gtdb_id] = self.gtdb_species[gtdb_id]
+            if gtdb_id in self.bvbrc_id:
+                bvbrc_id = self.bvbrc_id[gtdb_id]
+                annotation['bvbrc_id'][gtdb_id] = bvbrc_id
+                if bvbrc_id in self.bvbrc_name:
+                    bvbrc_name = self.bvbrc_name[bvbrc_id]
+                    annotation['bvbrc_name'][gtdb_id] = self.bvbrc_name[bvbrc_id]
         #genome_species = self.get_gtdb_species(genome_ids)
         #tip_label = {'label': species}
 
         retval += "<script type='text/javascript' src='gtdb_tree.js'></script>\n";
         retval += "<script type='text/javascript'>\n";
         retval += "const newick_tree_string = \""+newick+"\";\n" 
-        retval += "debug = true\n" 
-        #retval += "const tip_label = "+json.dumps(tip_label, indent=4)+";\n"  
+        retval += "debug = true;\n" 
+        retval += "tree_annotation = "+json.dumps(annotation, indent=4)+";\n"  
         if (stop_rank):
-            retval += "\nstop_rank='"+stop_rank+"'\n"
-        retval += "\ncreate_gtdb_tree(newick_tree_string)\n"
+            retval += "\nstop_rank='"+stop_rank+";'\n"
+
+        retval += "\ncreate_gtdb_tree(newick_tree_string, input_annotation=tree_annotation, initial_label='bvbrc_name')\n"
         retval += "\n</script>\n";
             
         retval += "</body></html>"
@@ -305,7 +349,7 @@ if __name__ == "__main__":
     webServer = HTTPServer((hostName, serverPort), TreeHandler)
     print("Server started http://%s:%s" % (hostName, serverPort))
 
-    gtdbData = GtdbData(tree_data_dir, input_tree)
+    gtdbData = GtdbData(tree_data)
     print("Files available:")
     files = os.listdir()
     for f in files:
