@@ -19,7 +19,7 @@ process_json_newick = function() {
 	initialize_annotation(tip_label)
 }
 
-create_tree = function(nwk_string, input_annotation=null, initial_label=null) {
+create_tree = function(nwk_string, input_annotation=null, annotation_labels=null, initial_label=null) {
 	container = document.getElementById('svg_container');
 	console.log("create_bvbrc_tree:"+nwk_string.substring(0,12))
 	if (stop_rank & debug)
@@ -87,13 +87,15 @@ create_tree = function(nwk_string, input_annotation=null, initial_label=null) {
 	if (input_annotation) {
 		console.log("input annotation provided")
 		annotation = input_annotation
-		if (initial_label) {
-			console.log("initial label: ${initial_label}")
-			initialize_annotation(initial_label)
-		}
 	}
 	if (annotation_labels) {
 		//create empty slots in annotation that can be retrieved later
+		console.log("annotation_labels = "+annotation_labels)
+		console.log("type of annotation_labels = "+(typeof annotation_labels))
+		console.log("stubs for annotation: num="+annotation_labels.length);
+		for (i in [1,2,3,4,5]) {
+			console.log("stub: "+annotation_labels[i])
+		}
 		if (! annotation) {
 			annotation = []
 		}
@@ -101,6 +103,8 @@ create_tree = function(nwk_string, input_annotation=null, initial_label=null) {
 			annotation[label] = null
 		}
 	}
+	console.log("initial label: "+initial_label)
+	initialize_annotation(initial_label)
 
 }
 
@@ -229,9 +233,21 @@ set_tip_text = function(node, display_text) {
 	text.textContent = display_text
 }
 
-relabel_tips = function(field) {
+async function relabel_tips(field) {
 	if (debug)
     		console.log("function relabel_tips "+field);
+	if (annotation[field] == null) {
+		// data hasn't been loaded, fetch it
+		//const url = server_url + "getTreeAnnotation?tree="+tree_id+"&field="+field
+		const url = "getTreeAnnotation?tree="+tree_id+"&field="+field
+		console.log("try fetching "+url)
+		if (debug)
+			console.log("fetching "+field+" for tree "+tree_id+": "+url);
+		const response = await fetch(url);
+		annotation[field] = await response.json();
+		if (debug)
+			console.log(annotation[field]);
+	}
     	tip_elements = document.querySelectorAll('.tip');
     	for (const tip of tip_elements) {
 		const tip_id = tip.getAttribute('id')
@@ -836,7 +852,7 @@ highlight_taxon = function(target_taxon_id) {
 }
 
 
-initialize_annotation = function(initial_label)
+initialize_annotation = function(initial_label= null)
 {
 	if (debug)
 		console.log("initialize_annotation");
@@ -848,22 +864,24 @@ initialize_annotation = function(initial_label)
 	    option = document.createElement('option');
 	    option.text = option.value = 'label';
 	    select.add(option, 0);
-	    for(const field in annotation) {
-		    if (debug)
+	    let i=0
+	    for(const field of annotation) {
+		    if (debug & i < 6) {
 			    console.log("annotation field "+field);
+			    i++;
+		    }
 		option = document.createElement('option');
 		option.text = option.value = field;
 		select.add(option, 0);
 	    }
-	    let starting_label = 'id';
-	    if (annotation[initial_label]) 
-		starting_label = initial_label;
-	    if (debug) {
-		    console.log('starting_label = '+starting_label)
-	    }
-	    select.value=starting_label;
 	    select.onchange=function(){relabel_tips(this.value)};
-	    relabel_tips(starting_label);
+	    if (initial_label & annotation[initial_label])  {
+		    if (debug) {
+			    console.log('starting_label = '+initial_label)
+		    }
+		    select.value=initial_label;
+		    relabel_tips(initial_label);
+	    }
 	}
 }
 

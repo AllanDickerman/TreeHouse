@@ -5,9 +5,11 @@ import re
 import datetime
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse
+from urllib.parse import parse_qs
 import json
 import os.path
 import glob
+import json
 
 bvbrc_name_lineage_file = "/Users/allan/git/TreeHouse/gtdb/bvbrc_genomes_in_gtdb_tree_with_lineage.txt"
 ncbi_parent_rank_name_file = "/Users/allan/git/TreeHouse/web_server/selected_ncbi_taxon_parent_rank_name.txt"
@@ -17,30 +19,60 @@ hostName = "localhost"
 serverPort = 8080
 bvbrcTaxonTrees = None
 #tree_data = sys.argv[1]
+state_mapped_tree = {}
 
 class TreeHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
-        self.send_header("Content-type", "text/html")
-        self.end_headers()
         parsed = urlparse(self.path)
         path = parsed.path.lstrip('/')
         print("Parsed query = "+parsed.query)
         print("stripped path = "+path)
         if os.path.isfile(path):
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
             print("found file "+path)
             with open(path) as file_to_serve:
                 self.wfile.write(bytes(file_to_serve.read(), "utf-8"))
             return
         elif path == 'pangenome':
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
             data_name = parsed.query
-            self.pangenome = PangenomeData(data_name)
-            response_html = self.pangenome.get_html()
+            pangenome = PangenomeData(data_name)
+            state_mapped_tree[data_name] = pangenome
+            print("state_mapped_trees we have: {}".format(state_mapped_tree.keys()))
+            print("{} in state_mapped_tree = {}".format(data_name, data_name in state_mapped_tree))
+            response_html = pangenome.get_html()
             self.wfile.write(bytes(response_html, "utf-8"))
+        elif path == 'getTreeAnnotation':
+            self.send_header("Content-type", "application/json")
+            self.end_headers()
+            query_dict = parse_qs(parsed.query)
+            print("query_dict = {}".format(query_dict))
+            response_json = "{}"
+            if 'tree' in query_dict and 'field' in query_dict:
+                data_name = query_dict['tree'][0]
+                character_name = query_dict['field'][0]
+                print("data_name = {}, character_name = {}".format(data_name, character_name))
+                print("state_mapped_trees we have: {}".format(state_mapped_tree.keys()))
+                print("{} in state_mapped_tree = {}".format(data_name, data_name in state_mapped_tree))
+                if data_name in state_mapped_tree:
+                    pangenome = state_mapped_tree[data_name]
+                    print("attempt getCharacterStatesJson")
+                    response_json = pangenome.getCharacterStatesJson(character_name)
+            print("retval={}".format(response_json))
+            self.wfile.write(response_json.encode("utf-8"))
+
+
         #elif (path == 'list') or not path:
+        #    self.send_header("Content-type", "text/html")
+        #    self.end_headers()
         #    list_html = bvbrcTaxonTrees.get_tree_list_html()
         #    self.wfile.write(bytes(list_html, "utf-8"))
         else:
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
             self.wfile.write(bytes("<html><head><title>Uninterpretable Request</title></head>", "utf-8"))
             self.wfile.write(bytes("<body>", "utf-8"))
             self.wfile.write(bytes("<p>Request: %s</p>" % self.path, "utf-8"))
@@ -62,11 +94,9 @@ class PangenomeData:
         if os.path.exists(os.path.join(data_name, "RAxML_marginalAncestralStates."+data_name)):
             print("try reading anc states {}".format(os.path.join(data_name, "RAxML_marginalAncestralStates."+data_name)))
             with open(os.path.join(data_name, "RAxML_marginalAncestralStates."+data_name)) as F:
-                for i, line in enumerate(F):
-                    if i % 2 == 0:
-                        node = line.strip()
-                    else:
-                        self.node_states[node] = line.strip()
+                for line in F:
+                    (node, states) = line.strip().split()
+                    self.node_states[node] = states
         list_files = glob.glob(os.path.join(data_name, "*.RAxML_rootedTree_map_to_chars.phy"))
         if len(list_files) == 1:
             print("try reading taxon states {}".format(list_files[0]))
@@ -84,6 +114,19 @@ class PangenomeData:
                 for i, line in enumerate(F):
                     index, name = line.strip().split("\t")
                     self.character_names.append(name)
+
+    def getCharacterStatesJson(self, character_name):
+        print("getCharacterStatesJson({})".format(character_name))
+        index = -1
+        retval = {}
+        try:
+            index = self.character_names.index(character_name)
+            print("found {} in character_names at index {}".format(character_name, index))
+            for node in self.node_states:
+                retval[node] = self.node_states[node][index]
+        except ValueError as ve:
+            print("exception {}".format(ve))
+        return json.dumps(retval)
 
     def get_html(self):
         failure_message = []
@@ -109,11 +152,11 @@ class PangenomeData:
         retval += "<h3>Tree with Pangenome: {}</h3>\n".format(self.name)
 
         retval += "<table>"
-        if (1):
-            retval += "<td><label for='annotation_field_select'>Character:</label><br>\n"
-            retval += "<select id='character_select'>\n"
-            retval += "</select>\n"
-            retval += "&nbsp;</td>";
+        retval += "<td><label for='annotation_field_select'>Character:</label><br>\n"
+        retval += "<select id='annotation_field_select'>\n"
+        retval += "</select>\n"
+        retval += "&nbsp;</td>";
+
         retval += "<td>\n";
         retval += "<label for='node_action_select'>Node Action</label><br>\n"
         retval += "<select id='node_action_select'>\n"
@@ -151,12 +194,15 @@ class PangenomeData:
         retval += "<script type='text/javascript' src='bvbrc_tree.js'></script>\n";
         retval += "<script type='text/javascript'>\n";
         retval += "debug = true;\n" 
+        retval += "tree_id = \"{}\";\n".format(self.name)
+        retval += "server_url = \"{}\";\n".format("127.0.0.1:8080")
         retval += "const newick_tree_string = \""+self.newick+"\";\n" 
         #retval += "tree_annotation = "+json.dumps(annotation, indent=4)+";\n"  
         retval += "annotation_labels = "+json.dumps(self.character_names, indent=4)+";\n"  
 
-        retval += "\ncreate_tree(newick_tree_string, annotation_labels=annotation_labels, initial_label='bvbrc_name')\n"
-        retval += "\n</script>\n";
+        retval += "\ncreate_tree(newick_tree_string, annotation_labels=annotation_labels)\n"
+        #retval += "initialize_annotation()\n";
+        retval += "</script>\n";
             
         retval += "</body></html>"
         return retval
@@ -334,7 +380,7 @@ class BvbrcTaxonTrees:
         genome_ids = re.findall("[(,]([^(),:]+)", newick)
         annotation = {}
         #annotation['species'] = {}
-        annotation['bvbrc_name'] = self.genome_name
+        #annotation['bvbrc_name'] = self.genome_name
         #tip_label = {'label': species}
         self.addNcbiTaxonAnnotation(genome_ids, annotation)
         self.addGtdbTaxonAnnotation(genome_ids, annotation)
