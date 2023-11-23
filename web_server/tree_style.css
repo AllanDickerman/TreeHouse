@@ -20,3 +20,4 @@ table, th, td {
 .taxon_link { background-color: 'yellow'; cursor: pointer;}
 
 .highlight { color: red }
+.path {color: green }

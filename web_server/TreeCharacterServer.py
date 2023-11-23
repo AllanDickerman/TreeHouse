@@ -11,15 +11,15 @@ import os.path
 import glob
 import json
 
-bvbrc_name_lineage_file = "/Users/allan/git/TreeHouse/gtdb/bvbrc_genomes_in_gtdb_tree_with_lineage.txt"
+#bvbrc_name_lineage_file = "/Users/allan/git/TreeHouse/gtdb/bvbrc_genomes_in_gtdb_tree_with_lineage.txt"
 ncbi_parent_rank_name_file = "/Users/allan/git/TreeHouse/web_server/selected_ncbi_taxon_parent_rank_name.txt"
-gtdb_taxonomy_file = "/Users/allan/git/TreeHouse/gtdb/bvbrc_gtbd_reference_taxonomy.txt"
-tree_data = '.' #'../gtdb'
+#gtdb_taxonomy_file = "/Users/allan/git/TreeHouse/gtdb/bvbrc_gtbd_reference_taxonomy.txt"
+#tree_data = '.' #'../gtdb'
 hostName = "localhost"
 serverPort = 8080
-bvbrcTaxonTrees = None
+#bvbrcTaxonTrees = None
 #tree_data = sys.argv[1]
-state_mapped_tree = {}
+#state_mapped_tree = {}
 
 class TreeHandler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -45,40 +45,42 @@ class TreeHandler(BaseHTTPRequestHandler):
             print("{} in state_mapped_tree = {}".format(data_name, data_name in state_mapped_tree))
             response_html = pangenome.get_html()
             self.wfile.write(bytes(response_html, "utf-8"))
-        elif path == 'getTreeAnnotation':
-            self.send_header("Content-type", "application/json")
-            self.end_headers()
+            return
+        elif path == 'get_pangenome_data':
             query_dict = parse_qs(parsed.query)
             print("query_dict = {}".format(query_dict))
-            response_json = "{}"
-            if 'tree' in query_dict and 'field' in query_dict:
-                data_name = query_dict['tree'][0]
-                character_name = query_dict['field'][0]
-                print("data_name = {}, character_name = {}".format(data_name, character_name))
+            response_json = None
+            if 'tree' in query_dict:
+                tree_name = query_dict['tree'][0]
+                print("tree_name = {}, character_name = {}".format(tree_name, character_name))
                 print("state_mapped_trees we have: {}".format(state_mapped_tree.keys()))
-                print("{} in state_mapped_tree = {}".format(data_name, data_name in state_mapped_tree))
-                if data_name in state_mapped_tree:
-                    pangenome = state_mapped_tree[data_name]
+                print("{} in state_mapped_tree = {}".format(tree_name, tree_name in state_mapped_tree))
+                if tree_name in state_mapped_tree:
+                    pangenome = state_mapped_tree[tree_name]
+                if 'character' in query_dict:
+                    character_name = query_dict['character'][0]
+                    print("character_name = {}".format(character_name))
                     print("attempt getCharacterStatesJson")
                     response_json = pangenome.getCharacterStatesJson(character_name)
-            print("retval={}".format(response_json))
-            self.wfile.write(response_json.encode("utf-8"))
+                elif 'gene_umap' in query_dict:
+                    print("attempt getGeneUmapCoords")
+                    response_json = pangenome.getGeneUmapCoords()
+            if response_json:
+                #print("retval={}".format(response_json))
+                self.send_header("Content-type", "application/json")
+                self.end_headers()
+                self.wfile.write(response_json.encode("utf-8"))
+                return
 
-
-        #elif (path == 'list') or not path:
-        #    self.send_header("Content-type", "text/html")
-        #    self.end_headers()
-        #    list_html = bvbrcTaxonTrees.get_tree_list_html()
-        #    self.wfile.write(bytes(list_html, "utf-8"))
-        else:
-            self.send_header("Content-type", "text/html")
-            self.end_headers()
-            self.wfile.write(bytes("<html><head><title>Uninterpretable Request</title></head>", "utf-8"))
-            self.wfile.write(bytes("<body>", "utf-8"))
-            self.wfile.write(bytes("<p>Request: %s</p>" % self.path, "utf-8"))
-            self.wfile.write(bytes("<p>path: %s</p>" % path, "utf-8"))
-            self.wfile.write(bytes("<p>query: %s</p>" % parsed.query, "utf-8"))
-            self.wfile.write(bytes("</body></html>", "utf-8"))
+        # if we get here we failed to interpret request
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+        self.wfile.write(bytes("<html><head><title>Uninterpretable Request</title></head>", "utf-8"))
+        self.wfile.write(bytes("<body>", "utf-8"))
+        self.wfile.write(bytes("<p>Request: %s</p>" % self.path, "utf-8"))
+        self.wfile.write(bytes("<p>path: %s</p>" % path, "utf-8"))
+        self.wfile.write(bytes("<p>query: %s</p>" % parsed.query, "utf-8"))
+        self.wfile.write(bytes("</body></html>", "utf-8"))
         return
 
 class PangenomeData:
@@ -87,17 +89,26 @@ class PangenomeData:
         if not os.path.exists(data_name):
             print("tried to find pangenome data for {}, not found".format(data_name))
             return
+        # read tree
         if os.path.exists(os.path.join(data_name, "RAxML_nodeLabelledRootedTree."+data_name)):
             with open(os.path.join(data_name, "RAxML_nodeLabelledRootedTree."+data_name)) as F:
                 self.newick = F.read().strip()
+        # modify tree so node identifiers don't look like bootstrap support numbers
+        self.newick = re.sub(r"\)(\d+)(?=[(),])", r")Node_\1", self.newick)
+        print("modified tree = \n"+self.newick)
+
         self.node_states = {}
+        # read data for ancestral nodes
         if os.path.exists(os.path.join(data_name, "RAxML_marginalAncestralStates."+data_name)):
             print("try reading anc states {}".format(os.path.join(data_name, "RAxML_marginalAncestralStates."+data_name)))
             with open(os.path.join(data_name, "RAxML_marginalAncestralStates."+data_name)) as F:
                 for line in F:
                     (node, states) = line.strip().split()
+                    # modify interior node labels that look like support values -- to match manipulation on tree
+                    node = re.sub(r"\A(\d)", r"Node_\1", node)
                     self.node_states[node] = states
-        list_files = glob.glob(os.path.join(data_name, "*.RAxML_rootedTree_map_to_chars.phy"))
+        # look for then read file with ancestral states (internal nodes on tree)
+        list_files = glob.glob(os.path.join(data_name, "*chars.phy"))
         if len(list_files) == 1:
             print("try reading taxon states {}".format(list_files[0]))
             with open(list_files[0]) as F:
@@ -106,7 +117,16 @@ class PangenomeData:
                 for line in F:
                     taxon, states = line.strip().split()
                     self.node_states[taxon] = states
-        list_files = glob.glob(os.path.join(data_name, "*.RAxML_rootedTree_map_to_chars.list"))
+        print("Tip and node ids for states:\n"+" ".join(self.node_states.keys()))
+
+        # look for file with gene umap coords
+        self.genes_umap_cords_file = None
+        list_files = glob.glob(os.path.join(data_name, "*chars_umap.json"))
+        if len(list_files) == 1:
+            self.genes_umap_cords_file = list_files[0]
+
+        # read ordered list of character names, so we can match names to columns of matrix
+        list_files = glob.glob(os.path.join(data_name, "*chars.list"))
         if len(list_files) == 1:
             print("try reading character names {}".format(list_files[0]))
             with open(list_files[0]) as F:
@@ -126,7 +146,15 @@ class PangenomeData:
                 retval[node] = self.node_states[node][index]
         except ValueError as ve:
             print("exception {}".format(ve))
-        return json.dumps(retval)
+        return json.dumps(retval, indent=2)
+
+    def getGeneUmapCoords(self, character_name):
+        print("getGeneUmapCoords()")
+        if self.genes_umap_cords_file:
+            with open(self.genes_umap_cords_file) as F:
+                retval = F.read()
+                return json.dumps(retval, indent=2)
+        return None
 
     def get_html(self):
         failure_message = []
@@ -181,6 +209,17 @@ class PangenomeData:
 
         retval += "<div id='svg_container' style='width: 800px; height: 600px; overflow-y: scroll;'>\n"
         retval += "</div>"
+        if self.gene_umap_coords_file:
+            retval += "Genes UMAP Plot\n"
+            retval += "<div id='genes_umap_container' style='width: 800px; height: 600px; overflow-y: scroll;'>\n"
+            retval += "</div>\n"
+            retval += "<script type='text/javascript' src='scatterplot.js'></script>\n";
+            retval += "<script type='text/javascript'>\n";
+            retval += "debug = true;\n" 
+            retval += "\ncreate_plot(container='genes_umap_container', data_name={})\n".format(self.name)
+            retval += "</script>\n";
+
+
 
         #genome_taxon = {}
         genome_ids = re.findall("[(,]([^(),:]+)", self.newick)
@@ -195,7 +234,6 @@ class PangenomeData:
         retval += "<script type='text/javascript'>\n";
         retval += "debug = true;\n" 
         retval += "tree_id = \"{}\";\n".format(self.name)
-        retval += "server_url = \"{}\";\n".format("127.0.0.1:8080")
         retval += "const newick_tree_string = \""+self.newick+"\";\n" 
         #retval += "tree_annotation = "+json.dumps(annotation, indent=4)+";\n"  
         retval += "annotation_labels = "+json.dumps(self.character_names, indent=4)+";\n"  
